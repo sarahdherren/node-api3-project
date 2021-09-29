@@ -7,11 +7,12 @@ function logger(req, res, next) {
 }
 
 async function validateUserId(req, res, next) {
-  const { id } = req.params
   try {
-  const user = await Users.getById(id)
-  if(user) {
-    req.user = user
+    const { id } = req.params
+    const user = await Users.getById(id)
+    if(user) {
+      req.user = user
+      next()
   } else {
     next({
       status: 404,
@@ -36,7 +37,15 @@ function validateUser(req, res, next) {
 }
 
 function validatePost(req, res, next) {
-  
+  const { text } = req.body
+  if(!text || typeof text !== 'string' || !text.trim()) {
+    next({
+      status: 400,
+      message: "missing required text field"
+    })
+  }else {
+    next()
+  }
 }
 
 module.exports = {
