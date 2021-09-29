@@ -19,19 +19,27 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-router.get('/:id', validateUserId, async (req, res) => {
-    res.status(200).json(req.user)
-  
+router.get('/:id', validateUserId, (req, res) => {
+  res.status(200).json(req.user)
 });
 
-router.post('/', validateUser, (req, res, next) => {
-  // RETURN THE NEWLY CREATED USER OBJECT
-
+router.post('/', validateUser, async (req, res, next) => {
+  try {
+    const newUser = await Users.insert(req.body)
+    res.status(201).json(newUser)
+  } catch(error){
+    next(error)
+  }
 });
 
-router.put('/:id', validateUserId, validateUser, (req, res, next) => {
-  // RETURN THE FRESHLY UPDATED USER OBJECT
-
+router.put('/:id', validateUserId, validateUser, async (req, res, next) => {
+  try {
+    const { id } = req.user
+    const updateUser = await Users.update(id, req.body)
+    res.status(200).json(updateUser)
+  } catch (error) {
+    next(error)
+  }
 });
 
 router.delete('/:id', validateUserId, (req, res, next) => {
