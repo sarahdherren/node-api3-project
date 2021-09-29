@@ -42,8 +42,13 @@ router.put('/:id', validateUserId, validateUser, async (req, res, next) => {
   }
 });
 
-router.delete('/:id', validateUserId, (req, res, next) => {
-  // RETURN THE FRESHLY DELETED USER OBJECT
+router.delete('/:id', validateUserId, async (req, res, next) => {
+  try {
+    const deletedUser = await Users.remove(req.user.id) //eslint-disable-line
+    res.status(200).json(req.user)
+  } catch (error) {
+    next(error)
+  }
  
 });
 
