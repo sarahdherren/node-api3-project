@@ -52,14 +52,25 @@ router.delete('/:id', validateUserId, async (req, res, next) => {
  
 });
 
-router.get('/:id/posts', validateUserId, (req, res, next) => {
-  // RETURN THE ARRAY OF USER POSTS
-  
+router.get('/:id/posts', validateUserId, async (req, res, next) => {
+  try {
+    const getPosts = await Users.getUserPosts(req.user.id)
+    res.status(200).json(getPosts)
+  } catch (error) {
+    next(error)
+  } 
 });
 
-router.post('/:id/posts', validateUserId, validatePost, (req, res, next) => {
-  // RETURN THE NEWLY CREATED USER POST
-  
+router.post('/:id/posts', validateUserId, validatePost, async (req, res, next) => {
+  try {
+    const createPost = await Posts.insert({
+      user_id: req.user.id,
+      text: req.text
+    })
+    res.status(201).json(createPost)
+  } catch (error) {
+    next(error)
+  }
 });
 
 router.use((err, req, res, next) => {
@@ -67,4 +78,5 @@ router.use((err, req, res, next) => {
     message: err.message
   })
 })
+
 module.exports = router;
